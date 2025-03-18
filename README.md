@@ -15,6 +15,8 @@
 
 ## Modul 3
 
+![modul3](/ss/modul-3.png)
+
 Tugas Tambahan
 
 
