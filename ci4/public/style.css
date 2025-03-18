@@ -309,3 +309,24 @@ footer{
 .form input[type="submit"]:hover {
     background-color: rgb(1, 232, 232);
 }
+
+.artikel-terkini {
+    list-style: none;
+    margin-left: 0; 
+    padding-left: 0;
+}
+
+.artikel-terkini li {
+    margin: 5px 0; 
+}
+
+.artikel-terkini a {
+    text-decoration: none;
+    color: #0066cc;
+    transition: color 0.3s;
+}
+
+.artikel-terkini a:hover {
+    color: #003399;
+    text-decoration: underline;
+}
