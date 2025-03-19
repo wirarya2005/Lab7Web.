@@ -26,7 +26,10 @@
 ![modul-3](/ss/modul-2-add.png)
 
 ## Modul 3
-
+![lay-main](/ss/modul-3-lay.png)
+![cell](/ss/modul-3-cell.png)
+![home](/ss/modul-3-home.png)
+![terkini-3](/ss/modul-3-artikelTerkini.png)
 ![modul3](/ss/modul-3.png)
 
 Tugas Tambahan
