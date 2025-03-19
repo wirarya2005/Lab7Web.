@@ -15,6 +15,12 @@
 
 
 ## Modul 2
+![con-db](/ss/modul-2-database-con.png)
+![artikelMod](/ss/modul-2-artikelModel.png)
+![artikelPHP](/ss/modul-2-artikelPHP.png)
+![index](/ss/modul-2-index.png)
+![fadd](/ss/modul-2-add.png)
+![fdit](/ss/modul-2-formedit.png)
 ![Modul2](/ss/modul-2-admin.png)
 ![modul2-2](/ss/modul-2-artikel-rev.png)
 ![modul-3](/ss/modul-2-add.png)
