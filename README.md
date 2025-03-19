@@ -5,6 +5,12 @@
 - Kelas : TI.23.A2
 
 ## Modul 1
+![env](/ss/modul-1-env.png)
+![routes](/ss/modul-1-routes.png)
+![page](/ss/modul-1-page.png)
+![about](/ss/modul-1-about.png)
+![header](/ss/modul-1-header.png)
+![footer](/ss/modul-1-footer.png)
 ![modul](/ss/modul-1-hasil.png)
 
 

@@ -23,7 +23,7 @@ class Page extends BaseController
         echo "Ini halaman FAQ";
     }
 
-    // Contoh method tambahan untuk autoroute
+    
     public function tos()
     {
         echo "Ini halaman Term of Services";
