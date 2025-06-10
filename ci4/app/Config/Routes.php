@@ -40,3 +40,5 @@ $routes->post('/ajax/update/(:num)', 'AjaxController::update/$1');
 
 $routes->get('/ajax/form', 'AjaxController::formTambah');
 $routes->get('/ajax/form/(:num)', 'AjaxController::formEdit/$1');
+
+$routes->resource('post');

@@ -271,7 +271,7 @@ $(document).ready(function () {
                         <td>${article.id}</td>
                         <td>
                             <b>${article.judul}</b>
-                            <p style="font-size: 0.85em; color: #666;">${article.isi.substring(0, 50)}...</p>
+                            <p style="font-size: 0.85em; color: #666;">${(article.isi || '').substring(0, 50)}...</p>
                         </td>
                         <td>${article.nama_kategori}</td>
                         <td><span class="badge ${article.status === 'published' ? 'badge-success' : 'badge-secondary'}">${article.status}</span></td>
