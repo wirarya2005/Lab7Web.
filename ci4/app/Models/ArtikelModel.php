@@ -19,4 +19,25 @@ class ArtikelModel extends Model
             ->get()
             ->getResultArray();
     }
+
+    public function filterArtikel($q = '', $kategori_id = '')
+    {
+        $builder = $this->db->table('artikel');
+        $builder->select('artikel.*, kategori.nama_kategori');
+        $builder->join('kategori', 'kategori.id_kategori = artikel.id_kategori');
+
+        if ($q) {
+            $builder->groupStart()
+                ->like('judul', $q)
+                ->orLike('isi', $q)
+                ->groupEnd();
+        }
+
+        if ($kategori_id) {
+            $builder->where('artikel.id_kategori', $kategori_id);
+        }
+
+        return $builder->get()->getResultArray();
+    }
+
 }

@@ -92,3 +92,9 @@ Dengan cara ini, view cell hanya akan menampilkan artikel yang termasuk dalam ka
 | ![edit-art](/ss/modul-7-edit-art.png) | [Mengedit Artikel dengan kategori lain]. |
 | ![edit-art-res](/ss/modul-7-edit-res.png) | [Hasil mengedit artikel]. |
 | ![del-art](/ss/modul-7-hapus.png) | [Menghapus artikel]. |
+
+## Modul 8 (Ajax)
+
+| Gambar | Penjelasan |
+|--------|-----------|
+| ![Ajax](/ss/modul-8-ajax.png) | Implentasi Ajax |

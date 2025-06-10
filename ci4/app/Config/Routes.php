@@ -27,3 +27,16 @@ $routes->group('admin', ['filter' => 'auth'],function($routes) {
     $routes->add('artikel/edit/(:any)', 'Artikel::edit/$1');
     $routes->get('artikel/delete/(:any)', 'Artikel::delete/$1');
 });
+
+
+$routes->get('/ajax', 'AjaxController::index');
+$routes->get('/ajax/getData', 'AjaxController::getData');
+// $routes->delete('/artikel/delete/(:num)', 'AjaxController::delete/$1');
+$routes->post('/ajax/delete/(:num)', 'AjaxController::delete/$1');
+
+
+$routes->post('/ajax/create', 'AjaxController::create');
+$routes->post('/ajax/update/(:num)', 'AjaxController::update/$1');
+
+$routes->get('/ajax/form', 'AjaxController::formTambah');
+$routes->get('/ajax/form/(:num)', 'AjaxController::formEdit/$1');

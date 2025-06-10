@@ -185,23 +185,20 @@
 </style>
 
 <div class="content-wrapper">
-    <form method="get" class="form-search">
-        <input type="text" name="q" value="<?= $q; ?>" placeholder="Cari data">
-        <select name="kategori_id" class="form-control mr-2">
+    <a href="<?= base_url('ajax/form') ?>" class="btn btn-primary" style="margin-bottom: 15px;">+ Tambah Artikel</a>
+
+    <form id="formFilter" class="form-search">
+        <input type="text" name="q" id="q" value="<?= esc($q ?? '') ?>" placeholder="Cari data">
+        <select name="kategori_id" id="kategori_id" class="form-control mr-2">
             <option value="">==Semua Kategori==</option>
-            <?php foreach (
-                isset(
-                    $kategori
-                ) ? $kategori : [] as $k): ?>
-                <option value="<?= $k['id_kategori']; ?>" <?= ($kategori_id == $k['id_kategori']) ? 'selected' : ''; ?>>
-                    <?= $k['nama_kategori']; ?>
-                </option>
+            <?php foreach ($kategori as $k): ?>
+                <option value="<?= $k['id_kategori']; ?>"><?= $k['nama_kategori']; ?></option>
             <?php endforeach; ?>
         </select>
         <input type="submit" value="Cari" class="btn btn-primary">
     </form>
 
-    <table class="table">
+    <table class="table" id="artikelTable">
         <thead>
             <tr>
                 <th>ID</th>
@@ -211,27 +208,7 @@
                 <th>Aksi</th>
             </tr>
         </thead>
-        <tbody>
-        <?php if($artikel): foreach($artikel as $row): ?>
-            <tr>
-                <td><?= $row['id']; ?></td>
-                <td>
-                    <b><?= $row['judul']; ?></b>
-                    <p><small><?= substr($row['isi'], 0, 50); ?></small></p>
-                </td>
-                <td><?= $row['nama_kategori']; ?></td>
-                <td><?= $row['status']; ?></td>
-                <td>
-                    <a class="btn" href="<?= base_url('/admin/artikel/edit/' . $row['id']); ?>">Ubah</a>
-                    <a class="btn btn-danger" onclick="return confirm('Yakin menghapus data?');" href="<?= base_url('/admin/artikel/delete/' . $row['id']); ?>">Hapus</a>
-                </td>
-            </tr>
-        <?php endforeach; else: ?>
-            <tr>
-                <td colspan="4">Belum ada data.</td>
-            </tr>
-        <?php endif; ?>
-        </tbody>
+        <tbody></tbody>
         <tfoot>
             <tr>
                 <th>ID</th>
@@ -243,5 +220,72 @@
         </tfoot>
     </table>
 </div>
+
+<script src="<?= base_url('assets/js/jquery-3.6.0.min.js') ?>"></script>
+<script>
+$(document).ready(function () {
+    function loadData(q = '', kategori_id = '') {
+        $('#artikelTable tbody').html('<tr><td colspan="5">Loading data...</td></tr>');
+
+        $.ajax({
+            url: "<?= base_url('ajax/getData') ?>",
+            method: "GET",
+            data: { q: q, kategori_id: kategori_id },
+            dataType: "json",
+            success: function (data) {
+                var tableBody = "";
+                if (data.length === 0) {
+                    tableBody = '<tr><td colspan="5">Data tidak ditemukan.</td></tr>';
+                } else {
+                    data.forEach(function (row) {
+                        tableBody += '<tr>';
+                        tableBody += '<td>' + row.id + '</td>';
+                        tableBody += '<td><b>' + row.judul + '</b><p><small>' + row.isi.substring(0, 50) + '</small></p></td>';
+                        tableBody += '<td>' + row.nama_kategori + '</td>';
+                        tableBody += '<td>' + row.status + '</td>';
+                        tableBody += '<td>';
+                        tableBody += '<a href="<?= base_url('admin/artikel/edit/') ?>' + row.id + '" class="btn">Ubah</a> ';
+                        tableBody += '<a href="#" class="btn btn-danger btn-delete" data-id="' + row.id + '">Hapus</a>';
+                        tableBody += '</td>';
+                        tableBody += '</tr>';
+                    });
+                }
+                $('#artikelTable tbody').html(tableBody);
+            }
+        });
+    }
+
+    // Initial load
+    loadData();
+
+    // Saat submit form filter
+    $('#formFilter').submit(function (e) {
+        e.preventDefault();
+        let q = $('#q').val();
+        let kategori_id = $('#kategori_id').val();
+        loadData(q, kategori_id);
+    });
+
+    // Hapus artikel
+    $(document).on('click', '.btn-delete', function (e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        if (confirm('Yakin ingin menghapus artikel ini?')) {
+            $.ajax({
+                url: "<?= base_url('ajax/delete/') ?>" + id,
+                method: "POST",
+                success: function () {
+                    let q = $('#q').val();
+                    let kategori_id = $('#kategori_id').val();
+                    loadData(q, kategori_id); // reload with filters
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Gagal menghapus artikel: ' + textStatus);
+                }
+            });
+        }
+    });
+});
+</script>
 
 <?= $this->include('template/admin_footer'); ?>
