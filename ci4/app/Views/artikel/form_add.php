@@ -13,6 +13,15 @@
         <textarea name="isi" cols="50" rows="10" placeholder="Isi artikel" class="form-control"></textarea>
       </div>
       
+      <div class="form-group">
+        <select name="id_kategori" class="form-control" required>
+          <option value="">Pilih Kategori</option>
+          <?php foreach ($kategori as $k): ?>
+            <option value="<?= $k['id_kategori']; ?>"><?= $k['nama_kategori']; ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      
       <div class="form-group file-upload">
         <label for="file-upload" class="file-label">
           <span class="file-icon">📎</span>

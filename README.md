@@ -72,3 +72,13 @@ Di file layout/main.php, ubah pemanggilan view cell seperti berikut:
 <?= view_cell('App\\Cells\\ArtikelTerkini::render', ['kategori' => 'Berita']) ?>
 ```
 Dengan cara ini, view cell hanya akan menampilkan artikel yang termasuk dalam kategori "Berita". Anda bisa mengganti parameter kategori sesuai kebutuhan.
+
+## Modul 4
+![login-page](/ss/modul%20-%204%20-%20login-page.png)
+
+## Modul 5
+![pencarian-pagination](/ss/modul-5-pencarian-pagination.png)
+
+## Modul 6
+![upload-gambar](/ss/modul-5-upload-gambar.png)
+![hasil-upload](/ss/modul-5-hasil-gambar.png)

@@ -187,6 +187,17 @@
 <div class="content-wrapper">
     <form method="get" class="form-search">
         <input type="text" name="q" value="<?= $q; ?>" placeholder="Cari data">
+        <select name="kategori_id" class="form-control mr-2">
+            <option value="">==Semua Kategori==</option>
+            <?php foreach (
+                isset(
+                    $kategori
+                ) ? $kategori : [] as $k): ?>
+                <option value="<?= $k['id_kategori']; ?>" <?= ($kategori_id == $k['id_kategori']) ? 'selected' : ''; ?>>
+                    <?= $k['nama_kategori']; ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
         <input type="submit" value="Cari" class="btn btn-primary">
     </form>
 
@@ -195,6 +206,7 @@
             <tr>
                 <th>ID</th>
                 <th>Judul</th>
+                <th>Kategori</th>
                 <th>Status</th>
                 <th>Aksi</th>
             </tr>
@@ -207,6 +219,7 @@
                     <b><?= $row['judul']; ?></b>
                     <p><small><?= substr($row['isi'], 0, 50); ?></small></p>
                 </td>
+                <td><?= $row['nama_kategori']; ?></td>
                 <td><?= $row['status']; ?></td>
                 <td>
                     <a class="btn" href="<?= base_url('/admin/artikel/edit/' . $row['id']); ?>">Ubah</a>
@@ -223,6 +236,7 @@
             <tr>
                 <th>ID</th>
                 <th>Judul</th>
+                <th>Kategori</th>
                 <th>Status</th>
                 <th>Aksi</th>
             </tr>

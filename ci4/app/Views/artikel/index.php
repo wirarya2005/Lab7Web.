@@ -8,6 +8,7 @@
         </a>
     </h2>
     <p><?= substr($row['isi'], 0, 200); ?></p>
+    <p>Kategori: <?= $row['nama_kategori']; ?></p>
 </article>
 <hr class="divider" />
 <?php endforeach; else: ?>
