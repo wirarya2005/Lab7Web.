@@ -82,3 +82,13 @@ Dengan cara ini, view cell hanya akan menampilkan artikel yang termasuk dalam ka
 ## Modul 6
 ![upload-gambar](/ss/modul-5-upload-gambar.png)
 ![hasil-upload](/ss/modul-5-hasil-gambar.png)
+
+## Modul 7
+
+| Gambar | Penjelasan |
+|--------|-----------|
+| ![berdasarkan-kat](/ss/modul-7-berdasarkan-kat.png) | Menampilkan daftar artikel berdasarkan kategori |
+| ![tambah-art-dengan-kat](/ss/modul-7-add-art-dengan-kat.png) | Menambahkan Artikel dengan kategori |
+| ![edit-art](/ss/modul-7-edit-art.png) | [Mengedit Artikel dengan kategori lain]. |
+| ![edit-art-res](/ss/modul-7-edit-res.png) | [Hasil mengedit artikel]. |
+| ![del-art](/ss/modul-7-hapus.png) | [Menghapus artikel]. |
