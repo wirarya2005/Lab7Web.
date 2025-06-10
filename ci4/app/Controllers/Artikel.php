@@ -33,27 +33,45 @@ class Artikel extends BaseController
     {
         $title = 'Daftar Artikel (Admin)';
         $model = new ArtikelModel();
+
         $q = $this->request->getVar('q') ?? '';
         $kategori_id = $this->request->getVar('kategori_id') ?? '';
+        $page = $this->request->getVar('page') ?? 1;
+        $orderBy = $this->request->getVar('orderBy') ?? 'id'; // Default sort by id
+        $sortOrder = $this->request->getVar('sortOrder') ?? 'DESC'; // Default sort order
+
         $data = [
             'title' => $title,
             'q' => $q,
             'kategori_id' => $kategori_id,
+            'orderBy' => $orderBy,
+            'sortOrder' => $sortOrder,
         ];
+
         $builder = $model->table('artikel')
             ->select('artikel.*, kategori.nama_kategori')
             ->join('kategori', 'kategori.id_kategori = artikel.id_kategori');
+
         if ($q != '') {
             $builder->like('artikel.judul', $q);
         }
         if ($kategori_id != '') {
             $builder->where('artikel.id_kategori', $kategori_id);
         }
-        $data['artikel'] = $builder->paginate(10);
+
+        // Apply sorting
+        $builder->orderBy($orderBy, $sortOrder);
+
+        $data['artikel'] = $builder->paginate(10, 'default', $page);
         $data['pager'] = $model->pager;
-        $kategoriModel = new KategoriModel();
-        $data['kategori'] = $kategoriModel->findAll();
-        return view('artikel/admin_index', $data);
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON($data);
+        } else {
+            $kategoriModel = new KategoriModel();
+            $data['kategori'] = $kategoriModel->findAll();
+            return view('artikel/admin_index', $data);
+        }
     }
 
 

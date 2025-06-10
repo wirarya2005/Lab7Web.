@@ -119,4 +119,16 @@ class Toolbar extends BaseConfig
     public array $watchedExtensions = [
         'php', 'css', 'js', 'html', 'svg', 'json', 'env',
     ];
+
+    public bool $autoRun = true;
+
+    /*
+     * If the toolbar should be enabled, or not. If not, everything is skipped.
+     */
+    public bool $enabled = CI_DEBUG;
+
+    /*
+     * If the toolbar should be enabled for AJAX requests (true/false)
+     */
+    public bool $ajaxEnabled = false;
 }

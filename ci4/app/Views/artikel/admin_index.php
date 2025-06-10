@@ -11,6 +11,7 @@
         display: flex;
         justify-content: flex-start;
         align-items: center;
+        gap: 10px;
         margin: 25px 0;
         background: white;
         padding: 15px 20px;
@@ -19,20 +20,21 @@
         border-left: 4px solid #2563eb;
     }
     
-    .form-search input[type="text"] {
+    .form-search input[type="text"],
+    .form-search select {
         flex: 1;
         padding: 12px 15px;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
         font-size: 16px;
         transition: all 0.3s ease;
-        margin-right: 10px;
         background-color: #f8fafc;
         color: #334155;
         font-family: 'Poppins', Arial, sans-serif;
     }
     
-    .form-search input[type="text"]:focus {
+    .form-search input[type="text"]:focus,
+    .form-search select:focus {
         outline: none;
         border-color: #2563eb;
         box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
@@ -167,9 +169,14 @@
             align-items: stretch;
         }
         
-        .form-search input[type="text"] {
+        .form-search input[type="text"],
+        .form-search select {
             margin-right: 0;
             margin-bottom: 10px;
+        }
+        
+        .form-search input[type="submit"] {
+            width: 100%;
         }
         
         table {
@@ -187,104 +194,182 @@
 <div class="content-wrapper">
     <a href="<?= base_url('ajax/form') ?>" class="btn btn-primary" style="margin-bottom: 15px;">+ Tambah Artikel</a>
 
-    <form id="formFilter" class="form-search">
-        <input type="text" name="q" id="q" value="<?= esc($q ?? '') ?>" placeholder="Cari data">
-        <select name="kategori_id" id="kategori_id" class="form-control mr-2">
+    <form id="search-form" class="form-search">
+        <input type="text" name="q" id="search-box" value="<?= esc($q ?? '') ?>" placeholder="Cari data" class="form-control mr-2">
+        <select name="kategori_id" id="category-filter" class="form-control mr-2">
             <option value="">==Semua Kategori==</option>
             <?php foreach ($kategori as $k): ?>
-                <option value="<?= $k['id_kategori']; ?>"><?= $k['nama_kategori']; ?></option>
+                <option value="<?= $k['id_kategori']; ?>" <?= ($kategori_id == $k['id_kategori']) ? 'selected' : ''; ?>>
+                    <?= $k['nama_kategori']; ?>
+                </option>
             <?php endforeach; ?>
         </select>
         <input type="submit" value="Cari" class="btn btn-primary">
     </form>
 
-    <table class="table" id="artikelTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Judul</th>
-                <th>Kategori</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-        <tfoot>
-            <tr>
-                <th>ID</th>
-                <th>Judul</th>
-                <th>Kategori</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </tfoot>
-    </table>
+    <div id="article-container"></div>
+    <div id="pagination-container"></div>
+
 </div>
 
-<script src="<?= base_url('assets/js/jquery-3.6.0.min.js') ?>"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function () {
-    function loadData(q = '', kategori_id = '') {
-        $('#artikelTable tbody').html('<tr><td colspan="5">Loading data...</td></tr>');
+    const articleContainer = $('#article-container');
+    const paginationContainer = $('#pagination-container');
+    const searchBox = $('#search-box');
+    const categoryFilter = $('#category-filter');
+    const searchForm = $('#search-form');
+    const baseUrl = '<?= base_url(); ?>'; 
+
+    const fetchData = (url) => {
+        // Show loading indicators
+        articleContainer.html('<p style="text-align: center; padding: 20px; color: #64748b;">Memuat data artikel...</p>');
+        paginationContainer.html('<p style="text-align: center; padding: 10px; color: #64748b;">Memuat paginasi...</p>');
 
         $.ajax({
-            url: "<?= base_url('ajax/getData') ?>",
-            method: "GET",
-            data: { q: q, kategori_id: kategori_id },
-            dataType: "json",
-            success: function (data) {
-                var tableBody = "";
-                if (data.length === 0) {
-                    tableBody = '<tr><td colspan="5">Data tidak ditemukan.</td></tr>';
-                } else {
-                    data.forEach(function (row) {
-                        tableBody += '<tr>';
-                        tableBody += '<td>' + row.id + '</td>';
-                        tableBody += '<td><b>' + row.judul + '</b><p><small>' + row.isi.substring(0, 50) + '</small></p></td>';
-                        tableBody += '<td>' + row.nama_kategori + '</td>';
-                        tableBody += '<td>' + row.status + '</td>';
-                        tableBody += '<td>';
-                        tableBody += '<a href="<?= base_url('admin/artikel/edit/') ?>' + row.id + '" class="btn">Ubah</a> ';
-                        tableBody += '<a href="#" class="btn btn-danger btn-delete" data-id="' + row.id + '">Hapus</a>';
-                        tableBody += '</td>';
-                        tableBody += '</tr>';
-                    });
-                }
-                $('#artikelTable tbody').html(tableBody);
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                renderArticles(data.artikel);
+                renderPagination(data.pager, data.q, data.kategori_id, data.orderBy, data.sortOrder);
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + " - " + error);
+                articleContainer.html('<p style="text-align: center; padding: 20px; color: #dc2626;">Gagal memuat data. Silakan coba lagi.</p>');
+                paginationContainer.html('');
             }
         });
-    }
+    };
 
-    // Initial load
-    loadData();
-
-    // Saat submit form filter
-    $('#formFilter').submit(function (e) {
-        e.preventDefault();
-        let q = $('#q').val();
-        let kategori_id = $('#kategori_id').val();
-        loadData(q, kategori_id);
-    });
-
-    // Hapus artikel
-    $(document).on('click', '.btn-delete', function (e) {
-        e.preventDefault();
-        var id = $(this).data('id');
-        if (confirm('Yakin ingin menghapus artikel ini?')) {
-            $.ajax({
-                url: "<?= base_url('ajax/delete/') ?>" + id,
-                method: "POST",
-                success: function () {
-                    let q = $('#q').val();
-                    let kategori_id = $('#kategori_id').val();
-                    loadData(q, kategori_id); // reload with filters
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    alert('Gagal menghapus artikel: ' + textStatus);
-                }
+    const renderArticles = (articles) => {
+        let html = `
+            <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th data-sort-by="id" class="sortable">ID <span class="sort-icon"></span></th>
+                        <th data-sort-by="judul" class="sortable">Judul <span class="sort-icon"></span></th>
+                        <th data-sort-by="nama_kategori" class="sortable">Kategori <span class="sort-icon"></span></th>
+                        <th data-sort-by="status" class="sortable">Status <span class="sort-icon"></span></th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        if (articles && articles.length > 0) {
+            const baseUrl = '<?= base_url(); ?>';
+            articles.forEach(article => {
+                const editUrl = `${baseUrl}admin/artikel/edit/${article.id}`;
+                const deleteUrl = `${baseUrl}admin/artikel/delete/${article.id}`;
+                html += `
+                    <tr>
+                        <td>${article.id}</td>
+                        <td>
+                            <b>${article.judul}</b>
+                            <p style="font-size: 0.85em; color: #666;">${article.isi.substring(0, 50)}...</p>
+                        </td>
+                        <td>${article.nama_kategori}</td>
+                        <td><span class="badge ${article.status === 'published' ? 'badge-success' : 'badge-secondary'}">${article.status}</span></td>
+                        <td>
+                            <a class="btn btn-sm btn-info" href="${editUrl}">Ubah</a>
+                            <a class="btn btn-sm btn-danger" onclick="return confirm('Yakin menghapus data?')" href="${deleteUrl}">Hapus</a>
+                        </td>
+                    </tr>
+                `;
             });
+        } else {
+            html += `<tr><td colspan="5" style="text-align: center; padding: 40px; color: #64748b; font-style: italic;">Tidak ada data.</td></tr>`;
         }
+        html += `</tbody></table></div>`;
+        articleContainer.html(html);
+    };
+
+    const renderPagination = (pager, q, kategori_id, orderBy, sortOrder) => {
+        let html = '';
+        if (pager && pager.links && pager.links.length > 0) {
+            const baseUrl = '<?= base_url(); ?>';
+            html += `<nav aria-label="Page navigation"><ul class="pagination justify-content-center">`;
+            pager.links.forEach(link => {
+                let url = `${baseUrl}admin/artikel`;
+                if (link.uri) {
+                    const urlParams = new URLSearchParams(link.uri.split('?')[1]);
+                    const page = urlParams.get('page');
+                    if (page) {
+                        url += `?page=${page}`;
+                    }
+                }
+                
+                const separator = url.includes('?') ? '&' : '?';
+                url += `${separator}q=${encodeURIComponent(q)}&kategori_id=${encodeURIComponent(kategori_id)}&orderBy=${encodeURIComponent(orderBy)}&sortOrder=${encodeURIComponent(sortOrder)}`;
+
+                html += `<li class="page-item ${link.active ? 'active' : ''}"><a class="page-link" href="#" data-page-url="${url}">${link.title}</a></li>`;
+            });
+            html += `</ul></nav>`;
+        }
+        paginationContainer.html(html);
+    };
+
+    searchForm.on('submit', function(e) {
+        e.preventDefault();
+        const q = searchBox.val();
+        const kategori_id = categoryFilter.val();
+        const currentOrderBy = $('#article-container th.sortable.active').data('sort-by') || 'id';
+        const currentSortOrder = $('#article-container th.sortable.active').data('sort-order') || 'DESC';
+        fetchData(`${baseUrl}admin/artikel?q=${encodeURIComponent(q)}&kategori_id=${encodeURIComponent(kategori_id)}&orderBy=${encodeURIComponent(currentOrderBy)}&sortOrder=${encodeURIComponent(currentSortOrder)}`);
     });
+
+    categoryFilter.on('change', function() {
+        searchForm.trigger('submit');
+    });
+
+    // Handle pagination link clicks
+    $(document).on('click', '.page-link', function(e) {
+        e.preventDefault();
+        const url = $(this).data('page-url');
+        fetchData(url);
+    });
+
+    // Handle sorting clicks
+    $(document).on('click', '#article-container th.sortable', function() {
+        const clickedColumn = $(this);
+        const orderBy = clickedColumn.data('sort-by');
+        let sortOrder = 'ASC';
+
+        // If this column is already sorted, toggle the order
+        if (clickedColumn.hasClass('active')) {
+            sortOrder = (clickedColumn.data('sort-order') === 'ASC') ? 'DESC' : 'ASC';
+        }
+
+        // Remove active class and sort icons from other columns
+        $('#article-container th.sortable').removeClass('active').removeData('sort-order');
+        $('#article-container th .sort-icon').html('');
+
+        // Add active class and set sort order for the clicked column
+        clickedColumn.addClass('active').data('sort-order', sortOrder);
+        clickedColumn.find('.sort-icon').html(sortOrder === 'ASC' ? ' &#9650;' : ' &#9660;'); // Up or Down arrow
+
+        // Trigger a new data fetch with sorting parameters
+        const q = searchBox.val();
+        const kategori_id = categoryFilter.val();
+        fetchData(`${baseUrl}admin/artikel?q=${encodeURIComponent(q)}&kategori_id=${encodeURIComponent(kategori_id)}&orderBy=${encodeURIComponent(orderBy)}&sortOrder=${encodeURIComponent(sortOrder)}`);
+    });
+
+    // Initial load and set default sorting visual
+    const initialOrderBy = 'id'; // Default sort column
+    const initialSortOrder = 'DESC'; // Default sort order
+    
+    // Set active class and sort order for the default column visually
+    const defaultSortColumn = $(`#article-container th[data-sort-by="${initialOrderBy}"]`);
+    defaultSortColumn.addClass('active').data('sort-order', initialSortOrder);
+    defaultSortColumn.find('.sort-icon').html(initialSortOrder === 'ASC' ? ' &#9650;' : ' &#9660;');
+
+    const initialUrl = `${baseUrl}admin/artikel?orderBy=${encodeURIComponent(initialOrderBy)}&sortOrder=${encodeURIComponent(initialSortOrder)}`;
+    fetchData(initialUrl);
 });
 </script>
 
