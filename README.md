@@ -1,4 +1,4 @@
-# Tugas Modul 1 - 3
+# Tugas Modul 1 - 6
 
 - Nama  : Arya Wiratama
 - NIM   : 312310224
